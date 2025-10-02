@@ -1,9 +1,11 @@
 // Ensure the script runs after the DOM content has fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Select DOM elements
+    const taskForm = document.getElementById('task-form');
     const addButton = document.getElementById('add-task-btn');
     const taskInput = document.getElementById('task-input');
     const taskList = document.getElementById('task-list');
+    const status = document.getElementById('status');
 
     // Function to add a new task to the list
     function addTask() {
@@ -13,21 +15,30 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validate input
         if (taskText === '') {
             alert('Please enter a task');
+            // Keep focus on the input for accessibility
+            taskInput.focus();
             return;
         }
 
         // Create list item for the task
         const li = document.createElement('li');
+        li.setAttribute('role', 'listitem');
         li.textContent = taskText;
 
         // Create remove button for the task
         const removeBtn = document.createElement('button');
         removeBtn.textContent = 'Remove';
         removeBtn.className = 'remove-btn';
+        removeBtn.setAttribute('aria-label', `Remove task: ${taskText}`);
 
         // Attach click handler to remove the task
         removeBtn.onclick = function() {
             taskList.removeChild(li);
+            if (status) {
+                status.textContent = `Removed task: ${taskText}`;
+            }
+            // Return focus to the input so keyboard users can continue quickly
+            taskInput.focus();
         };
 
         // Append the remove button and list item to the list
@@ -36,10 +47,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Clear the input field
         taskInput.value = '';
+        // Announce addition and move focus to input for rapid entry
+        if (status) {
+            status.textContent = `Added task: ${taskText}`;
+        }
+        taskInput.focus();
     }
 
     // Event listener for Add Task button
     addButton.addEventListener('click', addTask);
+
+    // Handle form submit (Enter on input, button click), prevent page reload
+    if (taskForm) {
+        taskForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            addTask();
+        });
+    }
 
     // Allow adding task by pressing Enter key
     taskInput.addEventListener('keypress', function(event) {
