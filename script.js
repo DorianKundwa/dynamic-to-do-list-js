@@ -7,10 +7,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const taskList = document.getElementById('task-list');
     const status = document.getElementById('status');
 
+    // Helpers for Local Storage
+    function getStoredTasks() {
+        try {
+            return JSON.parse(localStorage.getItem('tasks') || '[]');
+        } catch (error) {
+            return [];
+        }
+    }
+
+    function saveStoredTasks(tasks) {
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    function loadTasks() {
+        const storedTasks = getStoredTasks();
+        storedTasks.forEach(function(text) { addTask(text, false); });
+    }
+
     // Function to add a new task to the list
-    function addTask() {
-        // Retrieve and trim input value
-        const taskText = taskInput.value.trim();
+    function addTask(taskTextParam, save = true) {
+        // Determine and trim input value
+        const inputText = typeof taskTextParam === 'string' ? taskTextParam : taskInput.value;
+        const taskText = (inputText || '').trim();
 
         // Validate input
         if (taskText === '') {
@@ -34,6 +53,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Attach click handler to remove the task
         removeBtn.onclick = function() {
             taskList.removeChild(li);
+            // Update Local Storage after removal
+            const tasks = getStoredTasks();
+            const index = tasks.indexOf(taskText);
+            if (index !== -1) {
+                tasks.splice(index, 1);
+                saveStoredTasks(tasks);
+            }
             if (status) {
                 status.textContent = `Removed task: ${taskText}`;
             }
@@ -47,6 +73,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Clear the input field
         taskInput.value = '';
+        // Persist to Local Storage when needed
+        if (save) {
+            const tasks = getStoredTasks();
+            tasks.push(taskText);
+            saveStoredTasks(tasks);
+        }
         // Announce addition and move focus to input for rapid entry
         if (status) {
             status.textContent = `Added task: ${taskText}`;
@@ -55,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Event listener for Add Task button
-    addButton.addEventListener('click', addTask);
+    addButton.addEventListener('click', function() { addTask(); });
 
     // Handle form submit (Enter on input, button click), prevent page reload
     if (taskForm) {
@@ -72,8 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Invoke addTask on DOMContentLoaded as per instructions
-    addTask();
+    // Load tasks from Local Storage on DOMContentLoaded
+    loadTasks();
 });
 
 
