@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create remove button for the task
         const removeBtn = document.createElement('button');
         removeBtn.textContent = 'Remove';
-        removeBtn.className = 'remove-btn';
+        removeBtn.classList.add('remove-btn');
         removeBtn.setAttribute('aria-label', `Remove task: ${taskText}`);
 
         // Attach click handler to remove the task
