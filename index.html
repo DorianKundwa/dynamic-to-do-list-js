@@ -10,11 +10,17 @@
 <body>
     <div id="todo-app">
         <h1>My To-Do List</h1>
-        <input type="text" id="task-input" placeholder="Enter a new task">
-        <button id="add-task-btn">Add Task</button>
+        <form id="task-form" aria-labelledby="todo-heading">
+            <h1 id="todo-heading" class="sr-only">Add a task to your to-do list</h1>
+            <label for="task-input" class="sr-only">Task description</label>
+            <input type="text" id="task-input" name="task" placeholder="Enter a new task" autocomplete="off" aria-describedby="task-hint" />
+            <div id="task-hint" class="sr-only">Type a task and press Enter or use the Add Task button.</div>
+            <button id="add-task-btn" type="submit">Add Task</button>
+        </form>
         <ul id="task-list">
             <!-- Tasks will be listed here -->
         </ul>
+        <div id="status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
     </div>
     <script src="script.js"></script>
     
